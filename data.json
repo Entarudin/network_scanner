@@ -1,1 +1,12 @@
-{"ip": "192.168.244.128", "hosts": ["Interface: ens33, type: EN10MB, MAC: 00:0c:29:17:8a:47, IPv4: 192.168.244.128", "Starting arp-scan 1.9.7 with 256 hosts (https://github.com/royhills/arp-scan)", "192.168.244.1\t00:50:56:c0:00:08\tVMware, Inc.", "192.168.244.2\t00:50:56:f7:7c:a6\tVMware, Inc.", "192.168.244.254\t00:50:56:f5:d6:36\tVMware, Inc.", "", "3 packets received by filter, 0 packets dropped by kernel", "Ending arp-scan 1.9.7: 256 hosts scanned in 1.954 seconds (131.01 hosts/sec). 3 responded"]}
+{
+  "ip": "192.168.244.128",
+  "hosts": [
+    "Interface: ens33, type: EN10MB, MAC: 00:0c:29:17:8a:47, IPv4: 192.168.244.128",
+    "Starting arp-scan 1.9.7 with 256 hosts (https://github.com/royhills/arp-scan)",
+    "192.168.244.1\t00:50:56:c0:00:08\tVMware, Inc.",
+    "192.168.244.2\t00:50:56:f7:7c:a6\tVMware, Inc.",
+    "192.168.244.254\t00:50:56:f5:d6:36\tVMware, Inc.",
+    "3 packets received by filter, 0 packets dropped by kernel",
+    "Ending arp-scan 1.9.7: 256 hosts scanned in 1.969 seconds (130.02 hosts/sec). 3 responded"
+  ]
+}
