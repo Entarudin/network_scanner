@@ -7,6 +7,7 @@
     "192.168.244.2\t00:50:56:f7:7c:a6\tVMware, Inc.",
     "192.168.244.254\t00:50:56:f5:d6:36\tVMware, Inc.",
     "3 packets received by filter, 0 packets dropped by kernel",
-    "Ending arp-scan 1.9.7: 256 hosts scanned in 1.969 seconds (130.02 hosts/sec). 3 responded"
-  ]
+    "Ending arp-scan 1.9.7: 256 hosts scanned in 1.999 seconds (128.06 hosts/sec). 3 responded"
+  ],
+  "hostname": "maksim-virtual-machine"
 }

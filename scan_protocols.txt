@@ -1,0 +1,36 @@
+# Nmap 7.80 scan initiated Wed Jul 27 11:37:47 2022 as: nmap -sO -oN scan_protocols.txt 192.168.244.128/24
+Nmap scan report for 192.168.244.1
+Host is up (0.030s latency).
+Not shown: 255 open|filtered protocols
+PROTOCOL STATE SERVICE
+1        open  icmp
+MAC Address: 00:50:56:C0:00:08 (VMware)
+
+Nmap scan report for _gateway (192.168.244.2)
+Host is up (0.00040s latency).
+Not shown: 252 closed protocols
+PROTOCOL STATE         SERVICE
+1        open          icmp
+6        open          tcp
+17       open|filtered udp
+47       open|filtered gre
+MAC Address: 00:50:56:F7:7C:A6 (VMware)
+
+Nmap scan report for 192.168.244.254
+Host is up (0.00052s latency).
+All 256 scanned ports on 192.168.244.254 are open|filtered
+MAC Address: 00:50:56:F5:D6:36 (VMware)
+
+Nmap scan report for maksim-virtual-machine (192.168.244.128)
+Host is up (0.000011s latency).
+Not shown: 249 closed protocols
+PROTOCOL STATE         SERVICE
+1        open          icmp
+2        open|filtered igmp
+6        open          tcp
+17       open          udp
+103      open|filtered pim
+136      open|filtered udplite
+255      open|filtered unknown
+
+# Nmap done at Wed Jul 27 11:40:48 2022 -- 256 IP addresses (4 hosts up) scanned in 181.01 seconds
