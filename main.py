@@ -65,7 +65,7 @@ def get_network_interface_by_ip(shell_output: str, ip: str):
         return interface.split(' ')[0]
 
 
-def write_to_json(filename: str, ip: str, hosts: list[str], hostname: str) -> None:
+def write_to_json(filename: str, ip: str, hosts: list, hostname: str) -> None:
     presented = {
         "ip": ip,
         "hosts": hosts,
