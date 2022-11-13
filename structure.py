@@ -1,3 +1,6 @@
+from shell_commands_executor import ShellCommandsExecutor
+from services import JsonService, XmlService, ParseResultShellCommandsService
+from repositories import JsonRepository
 from commands import (
     GET_IP_COMMAND,
     GET_NETWORK_INTERFACES_COMMAND,
@@ -12,8 +15,6 @@ from commands import (
     SCAN_UPD_PORT_COMMAND,
     SCAN_PROTOCOLS_COMMAND,
 )
-from shell_commands_executor import ShellCommandsExecutor
-
 
 get_ip_shell_executor = ShellCommandsExecutor(GET_IP_COMMAND)
 get_network_interfaces_executor = ShellCommandsExecutor(GET_NETWORK_INTERFACES_COMMAND)
@@ -27,3 +28,9 @@ get_json_file_with_system_information_executor = ShellCommandsExecutor(GET_SYSTE
 get_scan_xml_report_to_tcp_ports_executor = ShellCommandsExecutor(SCAN_TCP_PORT_COMMAND)
 get_scan_xml_report_to_udp_ports_executor = ShellCommandsExecutor(SCAN_UPD_PORT_COMMAND)
 get_scan_xml_report_to_protocols_executor = ShellCommandsExecutor(SCAN_PROTOCOLS_COMMAND)
+
+parse_result_shell_commands_service = ParseResultShellCommandsService()
+json_service = JsonService()
+xml_service = XmlService()
+
+json_repository = JsonRepository()
