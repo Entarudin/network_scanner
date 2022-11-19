@@ -25,6 +25,12 @@ from structure import (
     scapy_wrapper
 )
 
+from dotenv import dotenv_values
+
+config = dotenv_values()
+
+REQUIREMENTS_FIELDS_REPORT_FILE = config['FIELDS_REPORT_FILE']
+
 
 def get_network_interface_by_ip(list_interface: list, ip: str):
     for interface in list_interface:
@@ -38,13 +44,21 @@ def cast_ip_to_network_address(ip: str) -> str:
 
 
 def get_ip_address_with_subnet_by_current_network_interface(
-        networks_interfaces: list, current_network_interface: str):
+        networks_interfaces: list, current_network_interface: str) -> str:
     for item in networks_interfaces:
         if item['name'] == current_network_interface:
             return item['ip']
 
 
-def main():
+def get_dict_by_fields(initial_dict: dict, fields: list) -> dict:
+    return {
+        key: value for key,
+                       value in initial_dict.items()
+        if key in fields
+    }
+
+
+def scan_network() -> dict:
     ip_address_without_subnet = get_ip_shell_executor.execute()
     list_network_interface = get_network_interfaces_executor.execute().split('\n')
     current_network_interface = get_network_interface_by_ip(list_network_interface, ip_address_without_subnet)
@@ -80,26 +94,36 @@ def main():
     tcp_ports = xml_service.to_dict(REPORT_SCAN_TCP_PORT_XML)
 
     get_scan_xml_report_to_udp_ports_executor.execute(REPORT_SCAN_UDP_PORT_XML, network_address)
-    upd_ports = xml_service.to_dict(REPORT_SCAN_UDP_PORT_XML)
+    udp_ports = xml_service.to_dict(REPORT_SCAN_UDP_PORT_XML)
 
     get_scan_xml_report_to_protocols_executor.execute(REPORT_SCAN_PROTOCOLS_XML, network_address)
     ip_ports = xml_service.to_dict(REPORT_SCAN_PROTOCOLS_XML)
 
-    json_repository.write_to_json(OUTPUT_RESULT_FILE,
-                                  ip_address_with_subnet,
-                                  hostname,
-                                  networks_interfaces,
-                                  current_network_interface,
-                                  dict_info_distribution_version,
-                                  info_core,
-                                  arp_table,
-                                  list_services_status,
-                                  list_installed_packages,
-                                  dict_system_information,
-                                  tcp_ports,
-                                  upd_ports,
-                                  ip_ports
-                                  )
+    return {
+        "ip_address": ip_address_with_subnet,
+        "hostname": hostname,
+        "networks_interfaces": networks_interfaces,
+        "current_network_interface": current_network_interface,
+        "distribution_version": dict_info_distribution_version,
+        "core": info_core,
+        "arp_table": arp_table,
+        "services_status": list_services_status,
+        "installed_packages": list_installed_packages,
+        "system_information": dict_system_information,
+        "tcp_ports": tcp_ports,
+        "udp_ports": udp_ports,
+        "ip_ports": ip_ports
+    }
+
+
+def main():
+    full_network_scanner_report = scan_network()
+    list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
+
+    network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
+                                                                         list_requirements_fields)
+
+    json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
 
 
 if __name__ == '__main__':

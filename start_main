@@ -3,5 +3,6 @@ sudo apt install arp-scan
 sudo apt-get install nmap
 sudo apt-get install python3
 sudo pip3 install xmltodict
+sudo pip3 install python-dotenv
 sudo python3 main.py
 
