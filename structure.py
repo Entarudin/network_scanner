@@ -1,6 +1,7 @@
 from shell_commands_executor import ShellCommandsExecutor
 from services import JsonService, XmlService, ParseResultShellCommandsService
 from repositories import JsonRepository
+from wrappers import ScapyWrapper
 from commands import (
     GET_IP_COMMAND,
     GET_NETWORK_INTERFACES_COMMAND,
@@ -34,3 +35,5 @@ json_service = JsonService()
 xml_service = XmlService()
 
 json_repository = JsonRepository()
+
+scapy_wrapper = ScapyWrapper()
