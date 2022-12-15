@@ -1,3 +1,5 @@
 from .json_service import JsonService
 from .xml_service import XmlService
 from .parse_result_shell_commands_service import ParseResultShellCommandsService
+from .parse_report_to_sfc_service import ParseReportToSFCService
+from .network_service import NetworkService
