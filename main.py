@@ -21,15 +21,25 @@ from structure import (
     parse_result_shell_commands_service,
     json_service,
     xml_service,
+    parser_report_to_sfc_service,
     json_repository,
-    scapy_wrapper
+    scapy_wrapper,
+    network_translator,
+    network_service,
+    sfcs_translator, sfcs_with_hosts_translators
 )
+from models import SFCWithHosts
 
 from dotenv import dotenv_values
+import requests
 
 config = dotenv_values()
 
 REQUIREMENTS_FIELDS_REPORT_FILE = config['FIELDS_REPORT_FILE']
+
+API_USER_LOGIN = config['API_USER_LOGIN']
+API_USER_PASSWORD = config['API_USER_PASSWORD']
+API_BASE_URL = config['API_BASE_URL']
 
 
 def get_network_interface_by_ip(list_interface: list, ip: str):
@@ -53,7 +63,7 @@ def get_ip_address_with_subnet_by_current_network_interface(
 def get_dict_by_fields(initial_dict: dict, fields: list) -> dict:
     return {
         key: value for key,
-                       value in initial_dict.items()
+        value in initial_dict.items()
         if key in fields
     }
 
@@ -116,14 +126,60 @@ def scan_network() -> dict:
     }
 
 
+def send_data_local_network_on_server(data_local_network: dict):
+    data_on_login = {
+        "email": API_USER_LOGIN,
+        "password": API_USER_PASSWORD
+    }
+
+    response_on_login = requests.post(f"{API_BASE_URL}/auth/login/", data=data_on_login)
+    tokens = response_on_login.json()
+
+    access_token = tokens.get('access_token')
+
+    response_send_local_network_data = requests.post(
+        f"{API_BASE_URL}/sfc/characteristics/upload-system-data/",
+        data=data_local_network,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    print(f"Status code response on send data local network: {response_send_local_network_data.status_code}")
+
+
+def get_sfcs_data_with_hosts(network_scanner_report: dict):
+    network = network_translator.from_json(network_scanner_report)
+    network_with_ports = network_service.filter_out_network_with_ports(network)
+    hosts = [*network_with_ports.ip_hosts, *network_with_ports.tcp_hosts, *network_with_ports.udp_hosts]
+
+    sfcs_dictribution = parser_report_to_sfc_service.parse_distribution_version(
+        network_scanner_report.get('distribution_version', {}))
+    sfcs_installed_packets = parser_report_to_sfc_service.parse_installed_packages(
+        network_scanner_report.get('installed_packages', []))
+    sfcs_system_information = parser_report_to_sfc_service.parse_system_information(
+        network_scanner_report.get('system_information', {}))
+    sfcs = [*sfcs_dictribution, *sfcs_installed_packets, *sfcs_system_information]
+    sfcs_with_hosts = SFCWithHosts()
+    sfcs_with_hosts.hosts = hosts
+    sfcs_with_hosts.sfcs = sfcs
+    result = sfcs_with_hosts_translators.to_dict(sfcs_with_hosts)
+    return result
+
+
 def main():
-    full_network_scanner_report = scan_network()
-    list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
+    # full_network_scanner_report = scan_network()
+    # list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
+    #
+    # network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
+    #                                                                      list_requirements_fields)
+    #
+    # send_data_local_network_on_server(network_scanner_report_with_requirements_fields)
+    # json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
 
-    network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
-                                                                         list_requirements_fields)
+    data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
 
-    json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
+    presented = get_sfcs_data_with_hosts(data)
+    print(presented)
 
 
 if __name__ == '__main__':
