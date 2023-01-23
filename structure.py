@@ -20,9 +20,12 @@ from commands import (
     GET_SERVICES_STATUS_COMMAND,
     GET_INSTALL_PACKAGES_COMMAND,
     GET_SYSTEM_INFORMATION_COMMAND,
+    GET_APPLICATION_COMMAND,
+    GET_VERSION_APPLICATION_COMMAND,
     SCAN_TCP_PORT_COMMAND,
     SCAN_UPD_PORT_COMMAND,
     SCAN_PROTOCOLS_COMMAND,
+
 )
 
 get_ip_shell_executor = ShellCommandsExecutor(GET_IP_COMMAND)
@@ -37,6 +40,8 @@ get_json_file_with_system_information_executor = ShellCommandsExecutor(GET_SYSTE
 get_scan_xml_report_to_tcp_ports_executor = ShellCommandsExecutor(SCAN_TCP_PORT_COMMAND)
 get_scan_xml_report_to_udp_ports_executor = ShellCommandsExecutor(SCAN_UPD_PORT_COMMAND)
 get_scan_xml_report_to_protocols_executor = ShellCommandsExecutor(SCAN_PROTOCOLS_COMMAND)
+get_list_applications_executor = ShellCommandsExecutor(GET_APPLICATION_COMMAND)
+get_version_application_executor = ShellCommandsExecutor(GET_VERSION_APPLICATION_COMMAND)
 
 sfc_translator = SFCTranslator()
 sfcs_translator = ListTranslator(sfc_translator)

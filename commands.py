@@ -9,6 +9,9 @@ GET_INFO_CORE_COMMAND = 'uname -a'
 GET_SERVICES_STATUS_COMMAND = 'systemctl show servicename --no-page'
 GET_INSTALL_PACKAGES_COMMAND = r"dpkg-query -f '${Package} ${Version} \n' -W"
 GET_SYSTEM_INFORMATION_COMMAND = f"lshw -json > {REPORT_SYSTEM_INFORMATION_JSON}"
+GET_APPLICATION_COMMAND = "ls /usr/share/applications"
+GET_VERSION_APPLICATION_COMMAND = "aptitude show {} | grep 'Version'"
+
 
 # NMAP
 SCAN_TCP_PORT_COMMAND = "nmap -p 0-49151 -sT -oX {} {}"

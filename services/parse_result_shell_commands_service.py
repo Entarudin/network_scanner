@@ -51,3 +51,20 @@ class ParseResultShellCommandsService:
                 "version": version
             })
         return result
+
+    def parse_applications_to_list(self, command_output: str) -> list:
+        result = []
+        list_applications = command_output.split('\n')
+        for item in list_applications:
+            chunks = item.split('.')
+            name_application = '.'.join(chunks[:-1])
+            result.append(name_application)
+        return result
+
+    def parse_application_version(self, command_output: str):
+        try:
+            chunks = command_output.split('Version:')
+            version = chunks[1].strip()
+            return version
+        except:
+            return "(none)"

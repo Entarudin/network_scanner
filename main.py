@@ -18,6 +18,8 @@ from structure import (
     get_scan_xml_report_to_tcp_ports_executor,
     get_scan_xml_report_to_udp_ports_executor,
     get_scan_xml_report_to_protocols_executor,
+    get_list_applications_executor,
+    get_version_application_executor,
     parse_result_shell_commands_service,
     json_service,
     xml_service,
@@ -26,8 +28,17 @@ from structure import (
     scapy_wrapper,
     network_translator,
     network_service,
-    sfcs_translator, sfcs_with_hosts_translators
+    sfcs_with_hosts_translators
 )
+
+from utils import (
+    get_command_dependencies_packages,
+    get_network_interface_by_ip,
+    get_ip_address_with_subnet_by_current_network_interface,
+    get_dict_by_fields,
+    cast_ip_to_network_address
+)
+from shell_commands_executor import ShellCommandsExecutor
 from models import SFCWithHosts
 
 from dotenv import dotenv_values
@@ -40,32 +51,6 @@ REQUIREMENTS_FIELDS_REPORT_FILE = config['FIELDS_REPORT_FILE']
 API_USER_LOGIN = config['API_USER_LOGIN']
 API_USER_PASSWORD = config['API_USER_PASSWORD']
 API_BASE_URL = config['API_BASE_URL']
-
-
-def get_network_interface_by_ip(list_interface: list, ip: str):
-    for interface in list_interface:
-        if ip not in interface:
-            continue
-        return interface.split(' ')[0]
-
-
-def cast_ip_to_network_address(ip: str) -> str:
-    return '.'.join(ip.split('.')[:-1]) + '.*'
-
-
-def get_ip_address_with_subnet_by_current_network_interface(
-        networks_interfaces: list, current_network_interface: str) -> str:
-    for item in networks_interfaces:
-        if item['name'] == current_network_interface:
-            return item['ip']
-
-
-def get_dict_by_fields(initial_dict: dict, fields: list) -> dict:
-    return {
-        key: value for key,
-        value in initial_dict.items()
-        if key in fields
-    }
 
 
 def scan_network() -> dict:
@@ -126,7 +111,7 @@ def scan_network() -> dict:
     }
 
 
-def send_data_local_network_on_server(data_local_network: dict):
+def send_data_local_network_on_server(data: dict):
     data_on_login = {
         "email": API_USER_LOGIN,
         "password": API_USER_PASSWORD
@@ -138,8 +123,8 @@ def send_data_local_network_on_server(data_local_network: dict):
     access_token = tokens.get('access_token')
 
     response_send_local_network_data = requests.post(
-        f"{API_BASE_URL}/sfc/characteristics/upload-system-data/",
-        data=data_local_network,
+        f"{API_BASE_URL}/sfc/characteristics/upload-user-system-data/",
+        data=data,
         headers={
             "Authorization": f"Bearer {access_token}"
         }
@@ -173,13 +158,51 @@ def main():
     # network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
     #                                                                      list_requirements_fields)
     #
-    # send_data_local_network_on_server(network_scanner_report_with_requirements_fields)
     # json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
 
     data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
+    sfcs_data_with_hosts = get_sfcs_data_with_hosts(data)
+    send_data_local_network_on_server(sfcs_data_with_hosts)
 
-    presented = get_sfcs_data_with_hosts(data)
-    print(presented)
+
+def get_dependencies_application_packages(application: str) -> list:
+    result = []
+    get_list_dependencies_packages_executor = ShellCommandsExecutor(get_command_dependencies_packages(application))
+    dependencies_packages_output_string = get_list_dependencies_packages_executor.execute()
+    if dependencies_packages_output_string:
+        list_dependencies_application = dependencies_packages_output_string.split("\n")
+        for item in list_dependencies_application:
+            chunks = item.split(':')
+            name_package = chunks[0]
+            version = chunks[1]
+            result.append({
+                "name": name_package,
+                "version": version
+            })
+    return result
+
+
+def get_applications_with_dependencies_packages():
+    result = []
+    applications_output_string = get_list_applications_executor.execute()
+    list_applications = parse_result_shell_commands_service.parse_applications_to_list(applications_output_string)
+    for application in list_applications:
+        dependencies_packages = get_dependencies_application_packages(application)
+        version_application = get_version_application_by_name(application)
+        result.append({
+            "application": {
+                "name": application,
+                "version": version_application
+            },
+            "packets": dependencies_packages
+        })
+    return result
+
+
+def get_version_application_by_name(application: str) -> str:
+    version_application_output_string = get_version_application_executor.execute(application)
+    version = parse_result_shell_commands_service.parse_application_version(version_application_output_string)
+    return version
 
 
 if __name__ == '__main__':
