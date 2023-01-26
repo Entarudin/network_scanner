@@ -48,9 +48,9 @@ config = dotenv_values()
 
 REQUIREMENTS_FIELDS_REPORT_FILE = config['FIELDS_REPORT_FILE']
 
-API_USER_LOGIN = config['API_USER_LOGIN']
-API_USER_PASSWORD = config['API_USER_PASSWORD']
-API_BASE_URL = config['API_BASE_URL']
+# API_USER_LOGIN = config['API_USER_LOGIN']
+# API_USER_PASSWORD = config['API_USER_PASSWORD']
+# API_BASE_URL = config['API_BASE_URL']
 
 
 def scan_network() -> dict:
@@ -130,6 +130,7 @@ def send_data_local_network_on_server(data: dict):
         }
     )
     print(f"Status code response on send data local network: {response_send_local_network_data.status_code}")
+    print(response_send_local_network_data.content)
 
 
 def get_sfcs_data_with_hosts(network_scanner_report: dict):
@@ -152,17 +153,17 @@ def get_sfcs_data_with_hosts(network_scanner_report: dict):
 
 
 def main():
-    # full_network_scanner_report = scan_network()
-    # list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
-    #
-    # network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
-    #                                                                      list_requirements_fields)
-    #
-    # json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
+    full_network_scanner_report = scan_network()
+    list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
+    
+    network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
+                                                                         list_requirements_fields)
+    
+    json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
 
-    data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
-    sfcs_data_with_hosts = get_sfcs_data_with_hosts(data)
-    send_data_local_network_on_server(sfcs_data_with_hosts)
+    # data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
+    # sfcs_data_with_hosts = get_sfcs_data_with_hosts(data)
+    # send_data_local_network_on_server(sfcs_data_with_hosts)
 
 
 def get_dependencies_application_packages(application: str) -> list:
