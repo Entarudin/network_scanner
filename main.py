@@ -20,6 +20,7 @@ from structure import (
     get_scan_xml_report_to_protocols_executor,
     get_list_applications_executor,
     get_version_application_executor,
+    get_description_application_executor,
     parse_result_shell_commands_service,
     json_service,
     xml_service,
@@ -48,9 +49,9 @@ config = dotenv_values()
 
 REQUIREMENTS_FIELDS_REPORT_FILE = config['FIELDS_REPORT_FILE']
 
-# API_USER_LOGIN = config['API_USER_LOGIN']
-# API_USER_PASSWORD = config['API_USER_PASSWORD']
-# API_BASE_URL = config['API_BASE_URL']
+API_BASE_URL = config["API_BASE_URL"]
+API_USER_LOGIN = config["API_USER_LOGIN"]
+API_USER_PASSWORD = config["API_USER_PASSWORD"]
 
 
 def scan_network() -> dict:
@@ -113,7 +114,7 @@ def scan_network() -> dict:
 
 def send_data_local_network_on_server(data: dict):
     data_on_login = {
-        "email": API_USER_LOGIN,
+        "email": API_BASE_URL,
         "password": API_USER_PASSWORD
     }
 
@@ -136,7 +137,7 @@ def send_data_local_network_on_server(data: dict):
 def get_sfcs_data_with_hosts(network_scanner_report: dict):
     network = network_translator.from_json(network_scanner_report)
     network_with_ports = network_service.filter_out_network_with_ports(network)
-    hosts = [*network_with_ports.ip_hosts, *network_with_ports.tcp_hosts, *network_with_ports.udp_hosts]
+    hosts = [*network_with_ports.tcp_hosts]
 
     sfcs_dictribution = parser_report_to_sfc_service.parse_distribution_version(
         network_scanner_report.get('distribution_version', {}))
@@ -155,14 +156,15 @@ def get_sfcs_data_with_hosts(network_scanner_report: dict):
 def main():
     full_network_scanner_report = scan_network()
     list_requirements_fields = REQUIREMENTS_FIELDS_REPORT_FILE.split(",")
-    
+
     network_scanner_report_with_requirements_fields = get_dict_by_fields(full_network_scanner_report,
                                                                          list_requirements_fields)
-    
+
     json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report_with_requirements_fields)
 
     # data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
     # sfcs_data_with_hosts = get_sfcs_data_with_hosts(data)
+    # json_repository.write_to_json(OUTPUT_RESULT_FILE, )
     # send_data_local_network_on_server(sfcs_data_with_hosts)
 
 
@@ -183,20 +185,21 @@ def get_dependencies_application_packages(application: str) -> list:
     return result
 
 
-def get_applications_with_dependencies_packages():
+def get_applications():
     result = []
     applications_output_string = get_list_applications_executor.execute()
     list_applications = parse_result_shell_commands_service.parse_applications_to_list(applications_output_string)
     for application in list_applications:
-        dependencies_packages = get_dependencies_application_packages(application)
         version_application = get_version_application_by_name(application)
-        result.append({
-            "application": {
-                "name": application,
-                "version": version_application
-            },
-            "packets": dependencies_packages
-        })
+        if version_application:
+            description_application = get_description_application_by_name(application)
+            result.append({
+                "application": {
+                    "name": application,
+                    "version": version_application,
+                    "description": description_application
+                }
+            })
     return result
 
 
@@ -204,6 +207,13 @@ def get_version_application_by_name(application: str) -> str:
     version_application_output_string = get_version_application_executor.execute(application)
     version = parse_result_shell_commands_service.parse_application_version(version_application_output_string)
     return version
+
+
+def get_description_application_by_name(application: str) -> str:
+    description_application_output_string = get_description_application_executor.execute(application)
+    description_application = parse_result_shell_commands_service. \
+        parse_application_description(description_application_output_string)
+    return description_application
 
 
 if __name__ == '__main__':

@@ -67,4 +67,11 @@ class ParseResultShellCommandsService:
             version = chunks[1].strip()
             return version
         except:
-            return "(none)"
+            return None
+
+    def parse_application_description(self, command_output: str):
+        try:
+            chunks = command_output.split("Description:")
+            return chunks[1].strip()
+        except:
+            return None
