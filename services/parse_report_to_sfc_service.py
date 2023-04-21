@@ -2,7 +2,7 @@ from models import SFC
 
 
 class ParseReportToSFCService:
-    def parse_distribution_version(self, distribution_version: dict) -> list[SFC]:
+    def parse_distribution_version(self, distribution_version: dict):
         result = []
         sfc = SFC()
         sfc.name = distribution_version.get('distributor_id')
@@ -10,7 +10,7 @@ class ParseReportToSFCService:
         result.append(sfc)
         return result
 
-    def parse_installed_packages(self, installed_packages: list) -> list[SFC]:
+    def parse_installed_packages(self, installed_packages: list):
         result = []
         for packet in installed_packages:
             sfc = SFC()
@@ -19,7 +19,7 @@ class ParseReportToSFCService:
             result.append(sfc)
         return result
 
-    def parse_system_information(self, system_information: dict) -> list[SFC]:
+    def parse_system_information(self, system_information: dict):
         result = []
 
         sfc = SFC()

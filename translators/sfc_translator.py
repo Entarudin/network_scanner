@@ -1,8 +1,5 @@
-from models import SFC
-
-
 class SFCTranslator:
-    def to_dict(self, model: SFC) -> dict:
+    def to_dict(self, model) -> dict:
         return {
             "name": model.name,
             "version": model.version

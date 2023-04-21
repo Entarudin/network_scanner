@@ -1,4 +1,3 @@
-from dotenv import dotenv_values
 import requests
 from reports_files import (
     REPORT_SYSTEM_INFORMATION_JSON,
@@ -31,14 +30,6 @@ from common import (
     cast_ip_to_network_address, get_applications
 )
 from field_report_file import field_report_requirements
-
-
-config = dotenv_values()
-
-API_BASE_URL = config["API_BASE_URL"]
-API_USER_LOGIN = config["API_USER_LOGIN"]
-API_USER_PASSWORD = config["API_USER_PASSWORD"]
-
 
 def scan_network() -> dict:
     result = {}
@@ -135,27 +126,6 @@ def scan_network() -> dict:
 
     return result
 
-
-def send_data_local_network_on_server(data: dict):
-    data_on_login = {
-        "email": API_BASE_URL,
-        "password": API_USER_PASSWORD
-    }
-
-    response_on_login = requests.post(f"{API_BASE_URL}/auth/login/", data=data_on_login)
-    tokens = response_on_login.json()
-
-    access_token = tokens.get('access_token')
-
-    response_send_local_network_data = requests.post(
-        f"{API_BASE_URL}/sfc/characteristics/upload-user-system-data/",
-        data=data,
-        headers={
-            "Authorization": f"Bearer {access_token}"
-        }
-    )
-    print(f"Status code response on send data local network: {response_send_local_network_data.status_code}")
-    print(response_send_local_network_data.content)
 
 
 def main():

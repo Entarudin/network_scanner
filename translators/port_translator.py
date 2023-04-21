@@ -2,7 +2,7 @@ from models import Port
 
 
 class PortTranslator:
-    def from_json(self, json) -> Port:
+    def from_json(self, json):
         model = Port()
         model.port_id = json.get("@portid")
         model.status = json.get("state", {}).get("@state")
@@ -10,7 +10,7 @@ class PortTranslator:
         model.protocol = json.get("@protocol")
         return model
 
-    def to_dict(self, model: Port) -> dict:
+    def to_dict(self, model) -> dict:
         return {
             "port_id": model.port_id,
             "status": model.status,
