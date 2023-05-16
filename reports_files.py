@@ -4,4 +4,5 @@ REPORT_SCAN_TCP_PORT_XML = 'scan_tcp_port.xml'
 REPORT_SCAN_UDP_PORT_XML = 'scan_udp_port.xml'
 REPORT_SCAN_PROTOCOLS_XML = 'scan_protocols.xml'
 
-OUTPUT_RESULT_FILE = 'data.json'
+NETWORK_DATA_RESULT_FILE = 'networks_data.json'
+SFCS_RESULT_FILE = 'sfcs.json'

@@ -1,10 +1,10 @@
-import requests
 from reports_files import (
     REPORT_SYSTEM_INFORMATION_JSON,
     REPORT_SCAN_TCP_PORT_XML,
     REPORT_SCAN_UDP_PORT_XML,
     REPORT_SCAN_PROTOCOLS_XML,
-    OUTPUT_RESULT_FILE
+    NETWORK_DATA_RESULT_FILE,
+    SFCS_RESULT_FILE
 )
 from structure import (
     get_ip_shell_executor,
@@ -22,12 +22,14 @@ from structure import (
     json_service,
     xml_service,
     json_repository,
-    scapy_wrapper,
+    scapy_wrapper
 )
 from common import (
     get_network_interface_by_ip,
     get_ip_address_with_subnet_by_current_network_interface,
-    cast_ip_to_network_address, get_applications
+    cast_ip_to_network_address,
+    get_applications,
+    get_sfcs_data
 )
 from field_report_file import field_report_requirements
 
@@ -130,12 +132,10 @@ def scan_network() -> dict:
 
 def main():
     network_scanner_report = scan_network()
-    json_repository.write_to_json(OUTPUT_RESULT_FILE, network_scanner_report)
-    # data = json_service.parse_json_to_dict(OUTPUT_RESULT_FILE)
-    # sfcs_data_with_hosts = get_sfcs_data_with_hosts(data)
-    # json_repository.write_to_json(OUTPUT_RESULT_FILE, )
-    # send_data_local_network_on_server(sfcs_data_with_hosts)
-
+    json_repository.write_to_json(NETWORK_DATA_RESULT_FILE, network_scanner_report)
+    data = json_service.parse_json_to_dict(NETWORK_DATA_RESULT_FILE)
+    sfcs_data_with_hosts = get_sfcs_data(data)
+    json_repository.write_to_json(SFCS_RESULT_FILE, sfcs_data_with_hosts )
 
 if __name__ == '__main__':
     main()

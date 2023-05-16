@@ -8,7 +8,8 @@ from structure import (
     network_translator,
     network_service,
     parser_report_to_sfc_service,
-    sfcs_with_hosts_translators
+    sfcs_with_hosts_translators,
+    sfcs_translator
 )
 
 
@@ -107,3 +108,13 @@ def get_sfcs_data_with_hosts(network_scanner_report: dict):
     sfcs_with_hosts.sfcs = sfcs
     result = sfcs_with_hosts_translators.to_dict(sfcs_with_hosts)
     return result
+
+def get_sfcs_data(network_scanner_report: dict):
+    sfcs_dictribution = parser_report_to_sfc_service.parse_distribution_version(
+        network_scanner_report.get('distribution_version', {}))
+    sfcs_installed_packets = parser_report_to_sfc_service.parse_installed_packages(
+        network_scanner_report.get('installed_packages', []))
+    sfcs_system_information = parser_report_to_sfc_service.parse_system_information(
+        network_scanner_report.get('system_information', {}))
+    sfcs = [*sfcs_dictribution, *sfcs_installed_packets, *sfcs_system_information]
+    return  sfcs_translator.to_dict(sfcs)

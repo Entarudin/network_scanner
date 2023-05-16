@@ -1,6 +1,6 @@
-from scapy.layers.inet import IP, ICMP
-from scapy.layers.l2 import Ether, ARP
-from scapy.sendrecv import sr1, srp
+from scapy.all import *
+from scapy.layers.inet import IP, Ether, ICMP
+from scapy.layers.l2 import ARP
 
 
 class ScapyWrapper:
